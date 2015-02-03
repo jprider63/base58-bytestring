@@ -1,4 +1,4 @@
-module Data.ByteString.Base58 where
+module Data.ByteString.Base58 (encode, decode) where
 
 import Control.Applicative ((<$>))
 import qualified Data.ByteString as BS
@@ -37,8 +37,8 @@ decodeBase58I s = case go of
     go = listToMaybe $ readInt 58 p f (B8.unpack s)
 
 -- | Encode a bytestring to a base 58 representation.
-encodeBase58 :: BS.ByteString -> BS.ByteString
-encodeBase58 bs = BS.append l r
+encode :: BS.ByteString -> BS.ByteString
+encode bs = BS.append l r
   where 
     (z,b) = BS.span (== 0) bs
     l = BS.map b58 z -- preserve leading 0's
@@ -47,8 +47,8 @@ encodeBase58 bs = BS.append l r
 
 -- | Decode a base 58 encoded bytestring. This can fail if the input bytestring
 -- contains invalid base 58 characters such as 0,O,l,I
-decodeBase58 :: BS.ByteString -> Maybe BS.ByteString
-decodeBase58 bs = r >>= return . (BS.append prefix)
+decode :: BS.ByteString -> Maybe BS.ByteString
+decode bs = r >>= return . (BS.append prefix)
   where 
     (z,b)  = BS.span (== (b58 0)) bs
     prefix = BS.map (fromJust . b58') z -- preserve leading 1's
